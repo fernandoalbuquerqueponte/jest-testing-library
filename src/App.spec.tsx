@@ -1,22 +1,27 @@
-import {
-  render,
-  waitFor,
-  waitForElementToBeRemoved,
-} from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
-import App from "./App";
+import List from "./components/list-tem";
 
 describe("App Component", () => {
   it("should render list items", () => {
-    const { getByText } = render(<App />);
+    const { getByText, rerender, queryByText } = render(
+      <List initialItems={["Fernando", "Abreu Motta", "Caio Motta"]} />
+    );
 
     expect(getByText("Fernando")).toBeInTheDocument();
-    expect(getByText("Caio")).toBeInTheDocument();
-    expect(getByText("Abreu")).toBeInTheDocument();
+    expect(getByText("Caio Motta")).toBeInTheDocument();
+    expect(getByText("Abreu Motta")).toBeInTheDocument();
+
+    rerender(<List initialItems={["Julia"]} />);
+
+    expect(getByText("Julia")).toBeInTheDocument();
+    expect(queryByText("Abreu Motta")).not.toBeInTheDocument();
   });
 
   it("it should be able to add new item to the list", async () => {
-    const { getByText, getByPlaceholderText } = render(<App />);
+    const { getByText, getByPlaceholderText } = render(
+      <List initialItems={[]} />
+    );
 
     const input = getByPlaceholderText("Novo Item");
     const button = getByText("Adicionar");
@@ -29,9 +34,9 @@ describe("App Component", () => {
     });
   });
   it("it should be able to add remove item from the list", async () => {
-    const { getByText, getAllByText, queryByText } = render(<App />);
-
-    const button = getByText("Adicionar");
+    const { getAllByText, queryByText } = render(
+      <List initialItems={["Fernando"]} />
+    );
 
     const removeButtons = getAllByText("Remover");
 
